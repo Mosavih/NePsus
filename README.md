@@ -1,4 +1,4 @@
-# NePsus — Evidence-Grounded Agentic Content Pipeline
+# NePsus V0.3 — Evidence-Grounded Agentic Content Pipeline
 
 An agentic LLM system that runs a personal data-journalism desk end-to-end:
 it monitors news feeds, discovers measurable research problems, gathers
