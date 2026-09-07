@@ -16,19 +16,59 @@ database objects), the gate pipeline, and how composition/verification work.
 
 ## Architecture
 
-```
-News feeds ──► Gate 1 collect ──► Gate 2 ontology extraction ──► problems
-                                                                      │
-        official stats (World Bank/IMF) ──► measurements ─────────────┤
-        OpenAlex/Crossref/arXiv ──────────► findings ─────────────────┤
-                                                                      ▼
-                                       evidence sweep (>=2 substrates)
-                                                                      │
-                     compose (dossier → outline → post → card) ◄──────┘
-                          │
-                    numeric guard → review → revise → final QC (rubric)
-                          │
-                     Telegram bot: draft → human approve → publish + sign
+```mermaid
+flowchart TB
+    subgraph INPUT["Data Sources"]
+        NEWS["News feeds"]
+        STATS["Official statistics<br/>World Bank / IMF"]
+        PAPERS["Scholarly sources<br/>OpenAlex / Crossref / arXiv"]
+    end
+
+    subgraph DISCOVERY["Discovery Layer"]
+        G1["Gate 1<br/>Collection"]
+        G2["Gate 2<br/>Ontology extraction"]
+        PROBLEMS["Research problems"]
+    end
+
+    subgraph INVESTIGATION["Investigation Layer"]
+        MEASURE["Measurements"]
+        FINDINGS["Findings"]
+        EVIDENCE["Evidence sweep<br/>≥2 substrates"]
+        DOSSIER["Evidence dossier"]
+    end
+
+    subgraph COMPOSITION["Composition & Verification"]
+        OUTLINE["Angle / outline"]
+        POST["Persian post"]
+        GUARD["Numeric guard"]
+        REPAIR["Deterministic repairs"]
+        QC["Final QC<br/>10-point rubric"]
+    end
+
+    subgraph DELIVERY["Human-in-the-Loop Delivery"]
+        DRAFT["Telegram draft"]
+        REVIEW["Human review"]
+        PUBLISH["Publish + sign"]
+    end
+
+    NEWS --> G1 --> G2 --> PROBLEMS
+
+    STATS --> MEASURE
+    PAPERS --> FINDINGS
+
+    PROBLEMS --> EVIDENCE
+    MEASURE --> EVIDENCE
+    FINDINGS --> EVIDENCE
+
+    EVIDENCE --> DOSSIER
+    DOSSIER --> OUTLINE --> POST
+    POST --> GUARD
+    GUARD --> REPAIR
+    REPAIR --> QC
+
+    QC --> DRAFT --> REVIEW
+    REVIEW -->|Approve| PUBLISH
+    REVIEW -->|Revise| POST
 ```
 
 - **Discovery layer** — RSS ingestion, semantic clustering, LLM problem
