@@ -140,11 +140,3 @@ Free-tier providers fail constantly: 429 quota walls, 502/503s, dead models.
 - A bounded retry budget (`ROUTER_MAX_ATTEMPTS`) prevents the
   retry-forever pathology; a whole-combo fallback order keeps the pipeline
   alive when one provider dies.
-
-## 7. What is deliberately not here
-
-- No paywalled scraping, no API-keyed providers: the corpus is free sources
-  only (RSS, World Bank/IMF/OWID, OpenAlex).
-- No fully-autonomous publishing: the approve tap is a feature, not a gap.
-- No prompt-only quality control: wherever an LLM failure mode appeared
-  twice, it became a tested deterministic function.
