@@ -1,0 +1,19 @@
+# Sources for Gate 1 collection.
+# Each entry maps to a Source row in the database and an RSS feed URL.
+# Add more sources here as the system grows.
+
+sources:
+  - name: "Tehran Times - Politics"
+    url: "https://www.tehrantimes.com/rss"
+    type: "news_agency"
+    language: "en"
+    country: "Iran"
+    collection_method: "rss"
+    reliability_tier: 2  # 1=high (established wire services), 5=low
+  - name: "Al Jazeera English"
+    url: "https://www.aljazeera.com/xml/rss/all.xml"
+    type: "news_agency"
+    language: "en"
+    country: "Qatar"
+    collection_method: "rss"
+    reliability_tier: 2

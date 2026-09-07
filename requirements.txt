@@ -1,0 +1,6 @@
+feedparser
+trafilatura
+python-telegram-bot
+openai
+python-dotenv
+requests

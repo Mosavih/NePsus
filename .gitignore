@@ -1,0 +1,23 @@
+# runtime secrets (never commit)
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# runtime state
+var/
+logs/
+posts/manifest.json
+
+# local panel state
+panel/state.db
+panel/panel.pid
+
+# OS
+Thumbs.db
+.DS_Store
+
+# test cache
+.pytest_cache/
