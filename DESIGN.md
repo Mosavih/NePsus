@@ -1,16 +1,15 @@
 # Design — Ontology, Gates, and Pipeline Architecture
 
 This document explains what NePsus computes and why. It is the map of the
-repository: every module listed here exists in the code, and every object
-exists in the SQLite schema (`src/database.py`).
+repository.
 
-## 1. The idea in one paragraph
+## 1. The idea 
 
 News tells you *that* something happens. Data tells you *how much*. Research
 tells you *why*. NePsus is a pipeline that fuses all three: it ingests news
 feeds, distills them into measurable research problems, attaches evidence
 from official statistics and scholarly literature, and only then lets an LLM
-write an analytical post — where every number in the draft is mechanically
+write an analytical post where every number in the draft is mechanically
 verified against the gathered evidence before publication. Quality gates and
 a human reviewer sit between composition and the channel.
 
