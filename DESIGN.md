@@ -25,10 +25,10 @@ designed before the code, and every extractor is constrained to produce them.
 | **Claim** | `claims` | A falsifiable proposition extracted from an artifact ("X stated Y about Z") | Gate 2 LLM extraction |
 | **Measurement** | `measurements` | A numeric observation: indicator, value, unit, reference period, provenance | World Bank/IMF/OWID adapters |
 | **Event** | `events` | A bounded happening with time and actors (strike, launch, ruling) | Gate 3.5 |
-| **Study** | `studies` | A scholarly paper retrieved for a question (OpenAlex, keyless) | Investigation layer |
+| **Study** | `studies` | A scholarly paper retrieved for a question (OpenAlex) | Investigation layer |
 | **Finding** | `findings` | A causal or associational claim extracted from a study, with graded `causal_strength` and `limitations` | Investigation layer |
 | **Intervention** | `interventions` | A named action/program upserted by canonical name — many studies attach to one intervention | Investigation layer |
-| **Problem** | `problems` | ONE measurable research question (the unit of editorial work) | Discovery layer |
+| **Problem** | `problems` | One measurable research question (the unit of editorial work) | Discovery layer |
 | **InvestigationQuestion** | `investigation_questions` | 3 specific Persian sub-questions per problem | Discovery layer |
 | **Analysis / Forecast / Evaluation** | `analyses`, `forecasts`, `evaluations` | Synthesis objects: scenario analysis, verifiable forecasts with adjudication criteria, later scoring | Forecast lane |
 
