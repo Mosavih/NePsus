@@ -46,6 +46,132 @@ Key status machines:
 - `claims.status`: `candidate → accepted / contested / rejected`.
 - `source_artifacts.processing_status`: `pending → extracted`, with
   `rejected` / `archived` for junk.
+```mermaid
+  erDiagram
+    SOURCE ||--o{ SOURCE_ARTIFACT : produces
+    SOURCE_ARTIFACT ||--o{ CLAIM : contains
+    SOURCE_ARTIFACT }o--o{ ENTITY : mentions
+    SOURCE_ARTIFACT }o--o{ EVENT : evidences
+
+    PROBLEM }o--o{ CLAIM : supported_by
+    PROBLEM }o--o{ MEASUREMENT : supported_by
+    PROBLEM }o--o{ FINDING : supported_by
+    PROBLEM ||--o{ INVESTIGATION_QUESTION : asks
+
+    CLAIM }o--o{ FINDING : relates_to
+
+    STUDY ||--o{ FINDING : reports
+    FINDING }o--o{ INTERVENTION : concerns
+
+    PROBLEM }o--o{ ENTITY : concerns
+    STUDY }o--o{ ENTITY : concerns
+
+    PROBLEM ||--o{ ANALYSIS : analyzed_by
+    PROBLEM ||--o{ FORECAST : forecasted_by
+    PROBLEM ||--o{ EVALUATION : evaluated_by
+
+    SOURCE {
+        string id PK
+        string name
+        string type
+        float reliability
+        string collection_method
+        string status
+    }
+
+    SOURCE_ARTIFACT {
+        string id PK
+        string source_id FK
+        string title
+        datetime published_at
+        string content_hash
+        string processing_status
+    }
+
+    CLAIM {
+        string id PK
+        string artifact_id FK
+        string text
+        string claim_origin
+        string status
+    }
+
+    MEASUREMENT {
+        string id PK
+        string indicator
+        string entity_id FK
+        float value
+        string unit
+        string reference_period
+        string provenance
+        string status
+    }
+
+    EVENT {
+        string id PK
+        string description
+        string time_scope
+    }
+
+    ENTITY {
+        string id PK
+        string canonical_name
+        string entity_type
+    }
+
+    STUDY {
+        string id PK
+        string title
+        int year
+        string source
+    }
+
+    FINDING {
+        string id PK
+        string study_id FK
+        string claim
+        string causal_strength
+        string limitations
+    }
+
+    INTERVENTION {
+        string id PK
+        string canonical_name
+    }
+
+    PROBLEM {
+        string id PK
+        string question
+        string domain
+        string status
+    }
+
+    INVESTIGATION_QUESTION {
+        string id PK
+        string problem_id FK
+        string question
+    }
+
+    ANALYSIS {
+        string id PK
+        string problem_id FK
+        string type
+    }
+
+    FORECAST {
+        string id PK
+        string problem_id FK
+        string outcome
+        string resolution_condition
+    }
+
+    EVALUATION {
+        string id PK
+        string problem_id FK
+        float score
+    }
+
+```
 
 ## 3. The gates (discovery front-end)
 
@@ -85,6 +211,61 @@ Domain diversity is codified in discovery: each problem is classified
 domains are drafted first, and at most one problem per domain is drafted per
 run so the dominant political story cannot fill the queue (see
 `tests/test_discovery_diversity.py`).
+
+**Pipeline Lifecycle**
+
+```mermaid
+flowchart TD
+    RSS["RSS feeds"] --> G1["Gate 1<br/>Collection"]
+    
+    G1 --> G2["Gate 2<br/>Ontology-constrained extraction"]
+    G2 --> G3["Gate 3<br/>Entity resolution"]
+    G3 --> G35["Gate 3.5<br/>Event detection"]
+    G35 --> G4["Gate 4<br/>Priority"]
+
+    G4 --> CLUSTER["Cluster news"]
+    CLUSTER --> DRAFT_PROBLEM["LLM drafts<br/>measurable problem"]
+    DRAFT_PROBLEM --> DEDUPE["Semantic dedupe"]
+
+    DEDUPE --> QG{"Question gate<br/>specific & measurable?"}
+
+    QG -->|No| CANDIDATE["Keep as candidate"]
+    QG -->|Yes| SWEEP["Evidence sweep"]
+
+    SWEEP --> LINK["Link claims +<br/>measurements + findings"]
+    LINK --> RETRIEVE["Retrieve scholarly<br/>evidence per question"]
+
+    RETRIEVE --> SUFF{"≥2 evidence<br/>substrates?"}
+
+    SUFF -->|No| WAIT["Not ready<br/>await more evidence"]
+    SUFF -->|Yes| READY["Problem ready"]
+
+    READY --> DOSSIER["Build bounded<br/>evidence dossier"]
+    DOSSIER --> OUTLINE["Select angle +<br/>build outline"]
+    OUTLINE --> WRITE["Generate Persian draft"]
+
+    WRITE --> NUMERIC["Numeric guard"]
+    NUMERIC --> NUM_OK{"All numbers<br/>grounded?"}
+
+    NUM_OK -->|No| REVISE["Targeted revision"]
+    REVISE --> NUMERIC
+
+    NUM_OK -->|Yes| REPAIR["Deterministic repairs"]
+
+    REPAIR --> RUBRIC["10-point quality rubric"]
+    RUBRIC --> QC{"Pass QC?"}
+
+    QC -->|No| RECOMPOSE["Recompose"]
+    RECOMPOSE --> DOSSIER
+
+    QC -->|Yes| DRAFT["Telegram draft"]
+
+    DRAFT --> HUMAN{"Human review"}
+
+    HUMAN -->|Revise| WRITE
+    HUMAN -->|Reject| ARCHIVE["Reject / archive"]
+    HUMAN -->|Approve| PUBLISH["Publish + sign"]
+```
 
 ## 4. Composition (dossier → verified post)
 
@@ -140,3 +321,5 @@ Free-tier providers fail constantly: 429 quota walls, 502/503s, dead models.
 - A bounded retry budget (`ROUTER_MAX_ATTEMPTS`) prevents the
   retry-forever pathology; a whole-combo fallback order keeps the pipeline
   alive when one provider dies.
+
+
