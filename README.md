@@ -129,7 +129,7 @@ The end-to-end pipeline is operational on a fixed evaluation corpus, including
 discovery, evidence retrieval, ontology-based investigation, composition,
 numeric verification, quality gating, and human-reviewed Telegram delivery.
 
-The system remains a research prototype rather than a production deployment.
+NePsus is a primitive version that will eventually develop into 
 Research preview. The system runs daily on a live Telegram channel; the
 public release is a cleaned snapshot of the production tree.
 
